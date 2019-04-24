@@ -1,11 +1,13 @@
 
 // Enable push of anonimous user to tungsten_ci docker registry
 def tf_docker_priv = ['nx-repository-admin-docker-tungsten_ci-*', 'nx-repository-view-docker-tungsten_ci-*']
-def tf_docker_role = ['tf_ci_docker']
 security.addRole(
-    'tf_ci_docker',
-    'tf_ci_docker',
+    'tf-ci-docker',
+    'tf-ci-docker',
     'Role allowing pushing into TF CI docker registries',
     tf_docker_priv,
-    null)
+    []
+)
+
+def tf_anonimous_roles = ['nx-anonymous', 'tf-ci-docker']
 security.setUserRoles('anonymous', tf_docker_role)

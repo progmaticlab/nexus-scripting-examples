@@ -1,6 +1,5 @@
 import org.sonatype.nexus.blobstore.api.BlobStoreManager
 import org.sonatype.nexus.repository.storage.WritePolicy
-import groovy.json.JsonOutput
 
 def create_docker_hosted(name, port) {
     repository.createDockerHosted(

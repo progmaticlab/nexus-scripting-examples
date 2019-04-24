@@ -56,6 +56,15 @@ def create_raw_proxy(name, remote) {
     ) 
 }
 
+def create_yum_hosted(name, depth) {
+    repository.createYumHosted(
+        name,                                       // repo name
+        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
+        true,                                       // strictContentTypeValidation
+        depth                                       // depth
+   ) 
+}
+
 def create_yum_proxy(name, remote) {
     repository.createYumProxy(
         name,                                       // repo name

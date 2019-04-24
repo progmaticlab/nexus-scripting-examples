@@ -1,5 +1,7 @@
 import org.sonatype.nexus.blobstore.api.BlobStoreManager
 import org.sonatype.nexus.repository.storage.WritePolicy
+import org.sonatype.nexus.repository.maven.VersionPolicy
+import org.sonatype.nexus.repository.maven.LayoutPolicy
 
 def create_docker_hosted(name, port) {
     repository.createDockerHosted(
@@ -63,6 +65,36 @@ def create_yum_proxy(name, remote) {
     ) 
 }
 
+def create_maven_hosted(name) {
+    repository.createMavenHosted(
+        name,                                       // repo name
+        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
+        true,                                       // strictContentTypeValidation
+        VersionPolicy.RELEASE,                      // versionPolicy
+        WritePolicy.ALLOW,                          // writePolicy
+        LayoutPolicy.PERMISSIVE                     // layoutPolicy
+    ) 
+}
+
+def create_maven_proxy(name, remote) {
+    repository.createMavenProxy(
+        name,                                       // repo name
+        remote,                                     // remoteUrl
+        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
+        true,                                       // strictContentTypeValidation
+        VersionPolicy.RELEASE,                      // versionPolicy
+        LayoutPolicy.PERMISSIVE                     // layoutPolicy
+    ) 
+}
+
+def create_maven_group(name, members) {
+    repository.createMavenGroup(
+        name,                                       // repo name
+        members,                                    // members
+        BlobStoreManager.DEFAULT_BLOBSTORE_NAME     // blob store
+    ) 
+}
+
 // Docker
 // Hosted
 create_docker_hosted('tungsten_ci', 5001)
@@ -93,6 +125,13 @@ create_yum_proxy('centos',              'https://mirror.yandex.ru')
 create_yum_proxy('epel',                'https://mirror.yandex.ru/epel/7/x86_64')
 // TODO: to be made hosted
 create_yum_proxy('yum-tungsten-tpc',    'http://148.251.5.90/tpc')
+
+// Maven: created by default automatically???
+create_maven_hosted('maven-releases')
+create_maven_hosted('maven-snapshots')
+create_maven_proxy('maven-central', 'https://repo1.maven.org/maven2')
+create_maven_group('maven-public', ['maven-releases', 'maven-snapshots', 'maven-central'])
+
 
 // TODO: Hosted are not needed
 //yum-tpc-test

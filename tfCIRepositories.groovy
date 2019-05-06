@@ -12,7 +12,7 @@ def create_docker_hosted(name, port) {
         true,                                       // v1Enabled
         true,                                       // strictContentTypeValidation
         WritePolicy.ALLOW                           // WritePolicy
-    ) 
+    )
 }
 
 def create_docker_proxy(name, port, remote) {
@@ -26,7 +26,7 @@ def create_docker_proxy(name, port, remote) {
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
         true,                                       // strictContentTypeValidation
         true                                        // v1Enabled
-    ) 
+    )
 }
 
 def create_pypi_proxy(name, remote) {
@@ -35,7 +35,7 @@ def create_pypi_proxy(name, remote) {
         remote,                                     // remoteUrl
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
         true                                        // strictContentTypeValidation
-    ) 
+    )
 }
 
 def create_raw_hosted(name, remote) {
@@ -44,7 +44,7 @@ def create_raw_hosted(name, remote) {
         remote,                                     // remoteUrl
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
         true                                        // strictContentTypeValidation
-    ) 
+    )
 }
 
 def create_raw_proxy(name, remote) {
@@ -53,7 +53,7 @@ def create_raw_proxy(name, remote) {
         remote,                                     // remoteUrl
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
         true                                        // strictContentTypeValidation
-    ) 
+    )
 }
 
 def create_yum_hosted(name, depth) {
@@ -62,7 +62,7 @@ def create_yum_hosted(name, depth) {
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
         true,                                       // strictContentTypeValidation
         depth                                       // depth
-   ) 
+    )
 }
 
 def create_yum_proxy(name, remote) {
@@ -71,7 +71,7 @@ def create_yum_proxy(name, remote) {
         remote,                                     // remoteUrl
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
         true                                        // strictContentTypeValidation
-    ) 
+    )
 }
 
 def create_maven_hosted(name) {
@@ -82,7 +82,7 @@ def create_maven_hosted(name) {
         VersionPolicy.RELEASE,                      // versionPolicy
         WritePolicy.ALLOW,                          // writePolicy
         LayoutPolicy.PERMISSIVE                     // layoutPolicy
-    ) 
+    )
 }
 
 def create_maven_proxy(name, remote) {
@@ -93,7 +93,7 @@ def create_maven_proxy(name, remote) {
         true,                                       // strictContentTypeValidation
         VersionPolicy.RELEASE,                      // versionPolicy
         LayoutPolicy.PERMISSIVE                     // layoutPolicy
-    ) 
+    )
 }
 
 def create_maven_group(name, members) {
@@ -101,7 +101,7 @@ def create_maven_group(name, members) {
         name,                                       // repo name
         members,                                    // members
         BlobStoreManager.DEFAULT_BLOBSTORE_NAME     // blob store
-    ) 
+    )
 }
 
 // Docker
@@ -127,11 +127,12 @@ create_yum_proxy('openstack-newton',    'http://mirror.neu.edu.cn/centos/7/cloud
 create_yum_proxy('openstack-ocata',     'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-ocata')
 create_yum_proxy('openstack-queens',    'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-queens')
 create_yum_proxy('openstack-rocky',     'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-rocky')
-create_yum_proxy('centos74',            'http://centos.mirror.vexxhost.com/7/os/x86_64')
-create_yum_proxy('centos74-updates',    'http://centos.mirror.vexxhost.com/7/updates/x86_64')
-create_yum_proxy('centos74-extras',     'http://centos.mirror.vexxhost.com/7/extras/x86_64')
-create_yum_proxy('centos',              'http://centos.mirror.vexxhost.com')
 create_yum_proxy('epel',                'https://dl.fedoraproject.org/pub/epel/7/x86_64')
+create_yum_proxy('epel-debug',          'https://dl.fedoraproject.org/pub/epel/7/x86_64/debug')
+create_yum_proxy('centos7-os',          'http://centos.mirror.vexxhost.com/7/os/x86_64')
+create_yum_proxy('centos7-updates',     'http://centos.mirror.vexxhost.com/7/updates/x86_64')
+create_yum_proxy('centos7-extras',      'http://centos.mirror.vexxhost.com/7/extras/x86_64')
+create_yum_proxy('centos7-centosplus',  'http://centos.mirror.vexxhost.com/7/centosplus/x86_64')
 // TODO: to be made hosted
 create_yum_proxy('yum-tungsten-tpc',    'http://148.251.5.90/tpc')
 

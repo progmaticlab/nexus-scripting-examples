@@ -1,107 +1,225 @@
 import org.sonatype.nexus.blobstore.api.BlobStoreManager
+import org.sonatype.nexus.repository.config.Configuration
 import org.sonatype.nexus.repository.storage.WritePolicy
 import org.sonatype.nexus.repository.maven.VersionPolicy
 import org.sonatype.nexus.repository.maven.LayoutPolicy
 
+
+def merge_attributes(dst, src) {
+    
+}
+
+def update_config(dst, src) {
+    attrs = dst.getAttributes()
+    merge_attributes(attrs, src.getAttributes())
+    dst.setAttributes(attrs)
+}
+
+def create_or_update_repo(name, configuration) {
+    def repoManager = repository.getRepositoryManager()
+    def existingRepository = repoManager.get(name)
+    if (existingRepository != null) {
+        existingRepository.stop()
+        existingRepository.update(configuration)
+        existingRepository.start()
+    } else {
+        repoManager.create(configuration)
+    }
+}
+
+def docker_opts = [
+    httpPort: port,
+    v1Enabled : true
+]
+
+def get_storage_opts(write_policy = WritePolicy.ALLOW) {
+    def storage_opts = null
+    if write_policy != null {
+        storage_opts =  [
+            writePolicy: write_policy,
+            blobStoreName: BlobStoreManager.DEFAULT_BLOBSTORE_NAME,
+            strictContentTypeValidation: true
+        ]
+    } else {
+        storage_opts =  [
+            blobStoreName: BlobStoreManager.DEFAULT_BLOBSTORE_NAME,
+            strictContentTypeValidation: true
+        ]
+    }
+    return storage_opts
+}
+
+def httpclient_opts = [
+    blocked: false,
+    autoBlock: false,
+    connection: [
+        useTrustStore: false
+    ]
+]
+
+def get_proxy_opts(remote) {
+    def proxy_opts = [
+        remoteUrl: remote,
+        contentMaxAge: 1440,
+        metadataMaxAge: 1440
+    ]
+    return proxy_opts
+}
+
+def negative_cache_opts =   [
+    enabled: true,
+    timeToLive: 1440
+]
+
+def maven_opts = [
+    versionPolicy: VersionPolicy.RELEASE,
+    layoutPolicy : LayoutPolicy.PERMISSIVE
+]
+
 def create_docker_hosted(name, port) {
-    repository.createDockerHosted(
-        name,                                       // repo name
-        port,                                       // http port
-        null,                                       // https port
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true,                                       // v1Enabled
-        true,                                       // strictContentTypeValidation
-        WritePolicy.ALLOW                           // WritePolicy
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'docker-hosted',
+        online: true,
+        attributes: [
+            docker: docker_opts,
+            storage: get_storage_opts()
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_docker_proxy(name, port, remote) {
-    repository.createDockerProxy(
-        name,                                       // repo name
-        remote,                                     // remoteUrl
-        'HUB',                                      // indexType
-        null,                                       // indexUrl
-        port,                                       // http port
-        null,                                       // https port
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true,                                       // strictContentTypeValidation
-        true                                        // v1Enabled
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'docker-proxy',
+        online: true,
+        attributes: [
+            docker: docker_opts,
+            proxy: get_proxy_opts(remote),
+            dockerProxy: [
+                indexType: 'HUB',
+                useTrustStoreForIndexAccess: true
+            ],
+            httpclient: httpclient_opts,
+            storage: get_storage_opts(null)
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_pypi_proxy(name, remote) {
-    repository.createPyPiProxy(
-        name,                                       // repo name
-        remote,                                     // remoteUrl
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true                                        // strictContentTypeValidation
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'pypi-proxy',
+        online: true,
+        attributes: [
+            proxy: get_proxy_opts(remote),
+            httpclient: httpclient_opts,
+            storage: get_storage_opts(null),
+            negativeCache: negative_cache_opts
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_raw_hosted(name, remote) {
-    repository.createRawProxy(
-        name,                                       // repo name
-        remote,                                     // remoteUrl
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true                                        // strictContentTypeValidation
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'raw-hosted',
+        online: true,
+        attributes: [
+            storage: get_storage_opts(),
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_raw_proxy(name, remote) {
-    repository.createRawProxy(
-        name,                                       // repo name
-        remote,                                     // remoteUrl
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true                                        // strictContentTypeValidation
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'raw-proxy',
+        online: true,
+        attributes: [
+            proxy: get_proxy_opts(remote),
+            httpclient: httpclient_opts,
+            storage: get_storage_opts(null),
+            negativeCache: negative_cache_opts
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_yum_hosted(name, depth) {
-    repository.createYumHosted(
-        name,                                       // repo name
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true,                                       // strictContentTypeValidation
-        depth                                       // depth
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'yum-hosted',
+        online: true,
+        attributes: [
+            repodataDepth: depth,
+            storage: get_storage_opts(),
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_yum_proxy(name, remote) {
-    repository.createYumProxy(
-        name,                                       // repo name
-        remote,                                     // remoteUrl
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true                                        // strictContentTypeValidation
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'yum-proxy',
+        online: true,
+        attributes: [
+            proxy: get_proxy_opts(remote),
+            httpclient: httpclient_opts,
+            storage: get_storage_opts(null),
+            negativeCache: negative_cache_opts
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_maven_hosted(name) {
-    repository.createMavenHosted(
-        name,                                       // repo name
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true,                                       // strictContentTypeValidation
-        VersionPolicy.RELEASE,                      // versionPolicy
-        WritePolicy.ALLOW,                          // writePolicy
-        LayoutPolicy.PERMISSIVE                     // layoutPolicy
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'maven2-hosted',
+        online: true,
+        attributes: [
+            maven: maven_opts,
+            storage: get_storage_opts()
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_maven_proxy(name, remote) {
-    repository.createMavenProxy(
-        name,                                       // repo name
-        remote,                                     // remoteUrl
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME,    // blob store
-        true,                                       // strictContentTypeValidation
-        VersionPolicy.RELEASE,                      // versionPolicy
-        LayoutPolicy.PERMISSIVE                     // layoutPolicy
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'maven2-proxy',
+        online: true,
+        attributes: [
+            maven: maven_opts,
+            proxy: get_proxy_opts(remote),
+            httpclient: httpclient_opts,
+            storage: get_storage_opts(null),
+            negativeCache: negative_cache_opts
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 def create_maven_group(name, members) {
-    repository.createMavenGroup(
-        name,                                       // repo name
-        members,                                    // members
-        BlobStoreManager.DEFAULT_BLOBSTORE_NAME     // blob store
+    configuration = new Configuration(
+        repositoryName: name,
+        recipeName: 'maven2-proxy',
+        online: true,
+        attributes: [
+            group  : [
+                memberNames: members
+            ]
+            storage: get_storage_opts(null),
+        ]
     )
+    create_or_update_repo(name, configuration)
 }
 
 // Docker

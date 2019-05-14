@@ -3,6 +3,7 @@ import org.sonatype.nexus.security.Roles
 import org.sonatype.nexus.security.role.NoSuchRoleException
 import org.sonatype.nexus.security.anonymous.AnonymousConfiguration
 import org.sonatype.nexus.security.user.UserManager
+import org.sonatype.nexus.security.realm.RealmManager
 
 // List of privileges for pushing into tungsten_ci docker registry
 def tf_docker_priv = ['nx-repository-admin-docker-tungsten_ci-*', 'nx-repository-view-docker-tungsten_ci-*']
@@ -40,3 +41,7 @@ security.setUserRoles(AnonymousConfiguration.DEFAULT_USER_ID, tf_anonimous_roles
 
 // Enable anonimous access to the system
 security.setAnonymousAccess(true)
+
+// Enable docker realm
+realmManager = container.lookup(RealmManager.class.getName())
+realmManager.enableRealm('DockerBearerToken')

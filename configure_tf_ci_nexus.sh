@@ -50,7 +50,7 @@ while [[ -n "$1" ]] ; do
     shift 2
 done
 
-[[ "${debug}" == 'true' ]] && set +x
+[[ "${debug}" == 'true' ]] && set -x
 
 function create_and_run_script {
   local name=$1
@@ -69,7 +69,6 @@ function create_and_run_script {
     "$url/service/rest/v1/script/$name/run"
   printf "\nExecuted $name script with result $?\n\n\n"
 }
-
 
 create_and_run_script tfci_repos tfCIRepositories.groovy
 create_and_run_script tfci_roles tfCIRoles.groovy

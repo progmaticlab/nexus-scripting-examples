@@ -235,6 +235,10 @@ create_docker_proxy('access', 5010, 'https://registry-1.docker.io')
 create_pypi_proxy('pypi', 'https://pypi.org')
 
 // Raw
+// Hosted
+create_raw_hosted('contrail-ubuntu')
+create_raw_hosted('images')
+create_raw_hosted('documentation')
 // Proxy
 create_raw_proxy('ubuntu', 'http://ubuntu.mirror.vexxhost.com/ubuntu')
 
@@ -260,6 +264,9 @@ create_maven_hosted('maven-snapshots')
 create_maven_proxy('maven-central', 'https://repo1.maven.org/maven2')
 create_maven_group('maven-public', ['maven-releases', 'maven-snapshots', 'maven-central'])
 
+// Remove web proxies if any
+core.removeHTTPProxy()
+core.removeHTTPSProxy()
 
 // TODO: Hosted are not needed
 //yum-tpc-test

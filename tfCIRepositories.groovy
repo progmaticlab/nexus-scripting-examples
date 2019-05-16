@@ -262,6 +262,7 @@ create_raw_hosted('images')
 create_raw_hosted('documentation')
 // Proxy
 create_raw_proxy('ubuntu', 'http://ubuntu.mirror.vexxhost.com/ubuntu')
+create_raw_proxy('contrail-third-party', 'http://148.251.5.90/contrail-third-party')
 
 // Yum
 // Proxy

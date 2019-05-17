@@ -40,12 +40,12 @@ def get_storage_opts(write_policy = WritePolicy.ALLOW) {
         storage_opts =  [
             writePolicy: write_policy,
             blobStoreName: BlobStoreManager.DEFAULT_BLOBSTORE_NAME,
-            strictContentTypeValidation: true
+            strictContentTypeValidation: false
         ]
     } else {
         storage_opts =  [
             blobStoreName: BlobStoreManager.DEFAULT_BLOBSTORE_NAME,
-            strictContentTypeValidation: true
+            strictContentTypeValidation: false
         ]
     }
     return storage_opts

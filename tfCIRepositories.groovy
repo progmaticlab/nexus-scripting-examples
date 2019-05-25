@@ -271,7 +271,6 @@ create_yum_proxy('openstack-newton',    'http://mirror.neu.edu.cn/centos/7/cloud
 create_yum_proxy('openstack-ocata',     'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-ocata')
 create_yum_proxy('openstack-queens',    'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-queens')
 create_yum_proxy('openstack-rocky',     'http://mirror.centos.org/centos/7/cloud/x86_64/openstack-rocky')
-create_yum_proxy('centos',              'http://centos.mirror.vexxhost.com')
 create_yum_proxy('epel',                'https://dl.fedoraproject.org/pub/epel/7/x86_64')
 create_yum_proxy('centos7-os',          'http://centos.mirror.vexxhost.com/7/os/x86_64')
 create_yum_proxy('centos7-updates',     'http://centos.mirror.vexxhost.com/7/updates/x86_64')
